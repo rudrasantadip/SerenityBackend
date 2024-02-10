@@ -1,8 +1,11 @@
 package com.app.farmers.Farmer.Controllers;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,6 +19,7 @@ import com.app.farmers.Farmer.Services.PrimeBotService;
 
 @RestController
 @RequestMapping("/prime")
+@CrossOrigin("http://localhost:4200")
 public class PrimeBotController
 {
     @Autowired
@@ -65,10 +69,24 @@ public class PrimeBotController
         }
     }
 
-    @GetMapping("/send-message/{botName}")
-    public ResponseEntity<Object> sendMessage(@RequestParam("message") String message, @PathVariable("botName")String botName)
+    @GetMapping("/send-message")
+    public ResponseEntity<String> sendMessage(@RequestParam("message") String message)
     {
-        Object response = pservice.respond(message, botName);
+        String response = pservice.respond(message);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/all-prime-bots")
+    public ResponseEntity<List<PrimeBot>> getAll()
+    {
+        List<PrimeBot> primeBots = pservice.getallBots();
+        if(primeBots!=null)
+        {
+            return ResponseEntity.ok(primeBots);
+        }
+        else 
+        {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 }
